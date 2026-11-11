@@ -62,13 +62,25 @@ function cpfValido(cpf) {
 }
 
 // true só para 'AAAA-MM-DD' que é uma data real ('2026-02-31' e '28/02/2026' são false).
+// dataSegura ajusta datas impossíveis (31/02 vira 28/02); se o resultado difere do original, a data não existe
 function dataValida(texto) {
-    throw new Error('TODO (Pessoa 1): dataValida');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+        return false;
+    }
+    const [ano, mes, dia] = texto.split('-').map(Number);
+    const data = dataSegura(ano, mes - 1, dia);
+    return data.getUTCFullYear() === ano && data.getUTCMonth() === mes - 1 && data.getUTCDate() === dia;
 }
 
 // { inicio, fim } do mês de `hoje`: o período padrão da listagem e dos relatórios.
 function mesCorrente(hoje = hojeISO()) {
-    throw new Error('TODO (Pessoa 1): mesCorrente');
+    if (!dataValida(hoje)) {
+        throw new Error('Data Inválida.');
+    }
+    const [ano, mes] = hoje.split('-').map(Number);
+    const inicio = `${ano}-${String(mes).padStart(2, '0')}-01`;
+    const fim = `${ano}-${String(mes).padStart(2, '0')}-${ultimoDiaDoMes(ano, mes - 1)}`;
+    return { inicio, fim };
 }
 
 // Período anterior de mesmo tamanho. Mês inteiro (novembro) compara com o mês inteiro anterior (outubro);
