@@ -39,7 +39,26 @@ function dataSegura(ano, mes, dia) {                     // aceita mes > 11 e aj
 // Os 2 dígitos verificadores batem. Aceita com ou sem pontuação; rejeita tamanho diferente de 11
 // e todos os dígitos iguais (111.111.111-11). Enunciado 10.5.1.
 function cpfValido(cpf) {
-    throw new Error('TODO (Pessoa 1): cpfValido');
+
+    cpf = String(cpf).replace(/\D/g, '');  // só números
+    if (!/^\d{11}$/.test(cpf) || /^(\d)\1{10}$/.test(cpf)) {
+        return false;
+    }
+
+    const calcDigito = (pos) => {
+        let soma = 0;
+        for (let i = 0; i < pos - 1; i++) {
+            soma += parseInt(cpf.charAt(i)) * (pos - i);
+        }
+        const resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
+    };
+
+    const digito1 = calcDigito(10);
+    const digito2 = calcDigito(11);
+
+
+    return digito1 === Number(cpf[9]) && digito2 === Number(cpf[10]);
 }
 
 // true só para 'AAAA-MM-DD' que é uma data real ('2026-02-31' e '28/02/2026' são false).
