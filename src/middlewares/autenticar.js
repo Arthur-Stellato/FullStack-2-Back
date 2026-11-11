@@ -1,8 +1,26 @@
-// DONO: Pessoa 1 (Acesso e base). Contrato em DIVISAO.md, seção 3.
-//
-// TODO: ler  Authorization: Bearer <token>  e validar com jwt.verify (JWT_SECRET, algoritmo HS256).
-//  - válido: req.usuarioId = Number(payload.sub) e next()
-//  - ausente, inválido ou expirado: next(new ErroApi(401, 'Token não informado.' / 'Token inválido ou expirado.'))
+const jwt = require('jsonwebtoken');
+const { ErroApi } = require('../models/models.regras');
+
 module.exports = (req, res, next) => {
-    throw new Error('TODO (Pessoa 1): middlewares/autenticar');
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        next(new ErroApi(401, 'Token não informado.'));
+        return;
+    }
+
+    const [scheme, token] = authHeader.split(' ');
+
+    if (scheme !== 'Bearer' || !token) {
+        next(new ErroApi(401, 'Formato de token inválido.'));
+        return;
+    }
+
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
+        req.usuarioId = Number(payload.sub);
+        next();
+    } catch (erro) {
+        next(new ErroApi(401, 'Token inválido ou expirado.'));
+    }
 };
