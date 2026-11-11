@@ -1,11 +1,34 @@
-// DONO: Pessoa 1 (Acesso e base). Contrato em DIVISAO.md, seção 3.
-//
-// TODO: Pool do pg usando DATABASE_URL (dotenv).
-//  - NUMERIC (tipo 1700) chega como number e DATE (tipo 1082) como texto 'AAAA-MM-DD' (types.setTypeParser)
-//  - pool.transacao(async (conn) => { ... }): BEGIN, roda a função com uma conexão do pool, COMMIT;
-//    se der erro, ROLLBACK e relança; sempre devolve a conexão ao pool
-// Quem usa: toda rota e todo model fazem  const connection = require('../config/connection')
+require('dotenv').config({quiet: true});
+
+const { Pool, types } = require('pg');
+
+types.setTypeParser(1700, (valor) => parseFloat(valor));  // "150.50" vira o número 150.5
+types.setTypeParser(1082, (valor) => valor);              // "2026-11-10" continua texto, como no contrato da API
+
+const ehLocal = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('localhost');
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: ehLocal ? false : { rejectUnauthorized: false },
+});
+
+pool.transacao = async (fn) => {
+    const conexao = await pool.connect();     // pega UMA conexão do pool só pra mim
+    try {
+        await conexao.query('BEGIN');         // começa a transação
+        const resultado = await fn(conexao);  // roda o código que a rota mandou, nessa conexão
+        await conexao.query('COMMIT');        // deu tudo certo: confirma
+        return resultado;
+    } catch (erro) {
+        await conexao.query('ROLLBACK');      // deu erro: desfaz tudo
+        throw erro;                           // e repassa o erro pra rota tratar
+    } finally {
+        conexao.release();                    // devolve a conexão ao pool, de qualquer jeito
+    }
+};
+
+
 
 const falta = (nome) => () => { throw new Error(`TODO (Pessoa 1): config/connection.${nome}`); };
 
-module.exports = { query: falta('query'), transacao: falta('transacao'), end: falta('end') };
+module.exports = pool
