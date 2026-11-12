@@ -1,4 +1,5 @@
-ErroApi = require('../models/models.regras');
+// src/middlewares/erros.js
+const { ErroApi } = require('../models/models.regras');
 
 module.exports = (erro, req, res, next) => {
     if (erro instanceof ErroApi) {
@@ -10,7 +11,5 @@ module.exports = (erro, req, res, next) => {
         res.status(erro.status).json({ erro: 'Requisição inválida.' });
         return;
     }
-
-    console.error(erro);
     res.status(500).json({ erro: 'Erro interno do servidor.' });
 };
