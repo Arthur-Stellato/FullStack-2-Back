@@ -86,12 +86,46 @@ function mesCorrente(hoje = hojeISO()) {
 // Período anterior de mesmo tamanho. Mês inteiro (novembro) compara com o mês inteiro anterior (outubro);
 // qualquer outro intervalo compara com a janela de mesma duração logo antes.
 function periodoAnterior(inicio, fim) {
-    throw new Error('TODO (Pessoa 1): periodoAnterior');
+    const mes = mesCorrente(inicio);
+    if (inicio === mes.inicio && fim === mes.fim) {
+        // Criamos a data com base no início do mês atual (evita problemas de string)
+        const [ano, mesNum] = inicio.split('-').map(Number);
+
+        // Mês anterior (lembrando que Date usa meses de 0 a 11, mas o construtor aceita o mês normal se passarmos o dia 0)
+        const ultimoDiaMesAnterior = new Date(Date.UTC(ano, mesNum - 1, 0));
+        const primeiroDiaMesAnterior = new Date(Date.UTC(ano, mesNum - 2, 1));
+
+        return {
+            inicio: iso(primeiroDiaMesAnterior),
+            fim: iso(ultimoDiaMesAnterior)
+        };
+    } else {
+        const dataInicio = paraData(inicio);
+        const dataFim = paraData(fim);
+        const duracao = dataFim.getTime() - dataInicio.getTime();
+        const inicioAnt = new Date(dataInicio.getTime() - duracao - UM_DIA);
+        const fimAnt = new Date(dataInicio.getTime() - UM_DIA);
+        return { inicio: iso(inicioAnt), fim: iso(fimAnt) };
+    }
 }
 
 // Lança ErroApi(400, 'Dados inválidos.', { inicio: ..., fim: ... }) se uma data for inválida ou inicio > fim.
 function validarPeriodo(inicio, fim) {
-    throw new Error('TODO (Pessoa 1): validarPeriodo');
+    const campos = {};
+    if (!dataValida(inicio)) {
+        campos.inicio = 'Data inválida.';
+    }
+    if (!dataValida(fim)) {
+        campos.fim = 'Data inválida.';
+    }
+    if (dataValida(inicio) && dataValida(fim) && inicio > fim) {
+        campos.inicio = 'Data de início maior que a de fim.';
+        campos.fim = 'Data de fim menor que a de início.';
+    }
+    if (Object.keys(campos).length > 0) {
+        throw new ErroApi(400, 'Dados inválidos.', campos);
+    }
+
 }
 
 // ---------- TODO Pessoa 2 ----------
