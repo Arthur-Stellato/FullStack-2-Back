@@ -1,6 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const connection = require('../config/connection');
+const rateLimit = require('express-rate-limit');
 const { ErroApi, cpfValido } = require('../models/models.regras');
 const { validar } = require('../middlewares/validar');
 
@@ -87,5 +89,47 @@ router.post('/cadastro', async (req, res) => {
     }
 });
 
+const limitarLogin = rateLimit({
+    windowMs: 15 * 60 * 1000,    // janela de 15 minutos, em milissegundos
+    limit: 10,                   // no máximo 10 tentativas por IP nessa janela
+    message: { erro: 'Muitas tentativas de login. Tente novamente em alguns minutos.' }
+});
+
+const HASH_FALSO = bcrypt.hashSync('senha-falsa', 10);
+
+router.post('/login', limitarLogin, async (req, res) => {
+
+    const { email, senha } = req.body ?? {};
+    const emailNormalizado = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const campos = {};
+
+    if (emailNormalizado === '') {
+        campos.email = 'E-mail é obrigatório';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalizado) || emailNormalizado.length > 160) {
+        campos.email = 'E-mail inválido';
+    }
+
+    if (typeof senha !== 'string' || senha === '') {
+        campos.senha = 'Informe a senha.';
+    }
+
+    validar(campos);
+
+    const { rows } = await connection.query(
+        'SELECT id, nome, email, senha_hash FROM usuarios WHERE email = $1',
+        [emailNormalizado]
+    );
+
+    const usuario = rows[0];
+    const senhaCorreta = await bcrypt.compare(senha, usuario ? usuario.senha_hash : HASH_FALSO);
+
+    if (!usuario || !senhaCorreta) {
+        throw new ErroApi(401, 'E-mail ou senha inválidos.');
+    }
+
+    const token = jwt.sign({ sub: String(usuario.id) }, process.env.JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' });
+
+    res.json({ token, usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email } });
+});
 
 module.exports = router;
