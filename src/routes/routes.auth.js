@@ -5,6 +5,7 @@ const connection = require('../config/connection');
 const rateLimit = require('express-rate-limit');
 const { ErroApi, cpfValido } = require('../models/models.regras');
 const { validar } = require('../middlewares/validar');
+const autenticar = require('../middlewares/autenticar');
 
 const router = express.Router();
 
@@ -130,6 +131,23 @@ router.post('/login', limitarLogin, async (req, res) => {
     const token = jwt.sign({ sub: String(usuario.id) }, process.env.JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' });
 
     res.json({ token, usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email } });
+});
+
+router.get('/me', autenticar, async (req, res) => {
+    const usuarioId = req.usuarioId;
+
+    const { rows } = await connection.query(
+        'SELECT id, nome, email, cpf, criado_em AS "criadoEm" FROM usuarios WHERE id = $1',
+        [usuarioId]
+    );
+
+    const usuario = rows[0];
+
+    if (!usuario) {
+        throw new ErroApi(404, 'Usuário não encontrado.');
+    }
+
+    res.json(usuario);
 });
 
 module.exports = router;

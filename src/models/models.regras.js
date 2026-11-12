@@ -1,6 +1,3 @@
-// Regras de negócio puras (nada aqui acessa o banco). Teste: npm test
-// As funções com TODO têm dono e o teste delas falha até ficarem prontas. O resto já vem pronto.
-
 // Erro com status HTTP. O middleware de erros responde { erro: mensagem, campos }.
 class ErroApi extends Error {
     constructor(status, mensagem, campos) {
