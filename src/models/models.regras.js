@@ -130,7 +130,11 @@ function validarPeriodo(inicio, fim) {
 // n valores (em reais) que somam exatamente `valor`. A sobra de centavos vai para a primeira parcela:
 // dividirParcelas(100, 3) => [33.34, 33.33, 33.33]
 function dividirParcelas(valor, n) {
-    throw new Error('TODO (Pessoa 2): dividirParcelas');
+    const total = emCentavos(valor);        // trabalha em centavos (inteiros) para a soma fechar exata
+    const base = Math.floor(total / n);     // valor de cada parcela, sem a sobra
+    const sobra = total - base * n;         // centavos que nao dividiram igualmente (0 ate n-1)
+
+    return Array.from({ length: n }, (_, i) => emReais(i === 0 ? base + sobra : base));
 }
 
 // ---------- TODO Pessoa 3 ----------
