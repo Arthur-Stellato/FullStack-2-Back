@@ -144,7 +144,31 @@ function dividirParcelas(valor, n) {
 // compra antes do dia de fechamento entra na fatura deste mês; no dia ou depois, na do mês seguinte;
 // a parcela k cai k-1 meses depois; dia inexistente (31 em fevereiro) vira o último dia do mês.
 function calcularFatura(dataCompra, cartao, numeroParcela = 1) {
-    throw new Error('TODO (Pessoa 3): calcularFatura');
+        const [ano, mes] = dataCompra.split('-').map(Number);
+
+    // Dia de fechamento no mês da compra (dataSegura troca o dia 31 por 28 em fevereiro, por exemplo)
+    const fechamentoDoMes = dataSegura(ano, mes - 1, cartao.diaFechamento);
+
+    // Antes do fechamento: fatura deste mês. No dia do fechamento ou depois: a do mês seguinte.
+    let mesDoFechamento = mes - 1;                       // 0 a 11, como o Date do JavaScript
+    if (paraData(dataCompra) >= fechamentoDoMes) {
+        mesDoFechamento += 1;
+    }
+
+    // A parcela 1 fica na primeira fatura; a parcela k cai (k - 1) meses depois
+    mesDoFechamento += numeroParcela - 1;
+    const fechamento = dataSegura(ano, mesDoFechamento, cartao.diaFechamento);
+
+    // Vencimento maior que o fechamento (ex.: fecha 3, vence 10): é no mesmo mês.
+    // Vencimento menor ou igual (ex.: fecha 25, vence 5): é no mês seguinte.
+    const mesDoVencimento = cartao.diaVencimento > cartao.diaFechamento ? mesDoFechamento : mesDoFechamento + 1;
+    const vencimento = dataSegura(ano, mesDoVencimento, cartao.diaVencimento);
+
+    return {
+        referencia: iso(vencimento).slice(0, 7),         // 'AAAA-MM' do mês do vencimento
+        fechamento: iso(fechamento),
+        vencimento: iso(vencimento),
+    };
 }
 
 module.exports = {
