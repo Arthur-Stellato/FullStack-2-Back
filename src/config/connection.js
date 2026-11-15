@@ -27,8 +27,4 @@ pool.transacao = async (fn) => {
     }
 };
 
-
-
-const falta = (nome) => () => { throw new Error(`TODO (Pessoa 1): config/connection.${nome}`); };
-
 module.exports = pool

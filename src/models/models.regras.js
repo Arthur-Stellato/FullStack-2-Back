@@ -31,8 +31,6 @@ function dataSegura(ano, mes, dia) {                     // aceita mes > 11 e aj
     return new Date(Date.UTC(a, m, Math.min(dia, ultimoDiaDoMes(a, m))));
 }
 
-// ---------- TODO Pessoa 1 ----------
-
 // Os 2 dígitos verificadores batem. Aceita com ou sem pontuação; rejeita tamanho diferente de 11
 // e todos os dígitos iguais (111.111.111-11). Enunciado 10.5.1.
 function cpfValido(cpf) {

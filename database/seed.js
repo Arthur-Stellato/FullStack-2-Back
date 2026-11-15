@@ -5,8 +5,8 @@ const { hojeISO } = require('../src/models/models.regras');
 
 const SENHA = 'demo12345';
 const USUARIOS = [
-    { nome: 'Ana Demo', email: 'ana@demo.com', cpf: '52998224725' },
-    { nome: 'Bruno Demo', email: 'bruno@demo.com', cpf: '11144477735' },
+    { nome: 'Ana Demo', email: 'ana@demo.com', cpf: '16899535009' },
+    { nome: 'Bruno Demo', email: 'bruno@demo.com', cpf: '93541134780' },
 ];
 
 const CATEGORIAS = [
@@ -73,7 +73,7 @@ function data(mesesAtras, dia) {
                     `INSERT INTO lancamentos (usuario_id, tipo, descricao, valor, data, categoria_id, fonte_destino_id)
                      VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                     [ana.usuario, tipo, descricao, cat === 'saida:Lazer' ? valor + mesesAtras * 50 : valor,
-                        data(mesesAtras, dia), ana.categorias[cat], ana.fontes[fonte]]
+                    data(mesesAtras, dia), ana.categorias[cat], ana.fontes[fonte]]
                 );
             }
         }
