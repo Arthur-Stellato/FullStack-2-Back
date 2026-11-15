@@ -3,7 +3,7 @@
 API REST do Projeto 2 (Full Stack): controle financeiro pessoal. Cadastro e login com JWT, categorias,
 fontes/destinos, lançamentos (com parcelas no cartão de crédito) e relatórios.
 
-> Divisão do trabalho do grupo, regras e contratos: [DIVISAO.md](DIVISAO.md)
+O front-end fica em outro repositório: [FullStack-2-Front](https://github.com/Arthur-Stellato/FullStack-2-Front).
 
 ## Tecnologias
 
@@ -11,14 +11,65 @@ Node.js, Express 5, PostgreSQL (driver `pg`), bcrypt, jsonwebtoken, dotenv, cors
 
 ## Como rodar
 
-1. `npm install`
-2. Criar o banco: `createdb api_financeira`
-3. `cp .env.example .env` e ajustar `DATABASE_URL` e `JWT_SECRET`
-4. `npm run db:criar` (cria as tabelas a partir dos models)
-5. `npm run seed` (2 usuários e 3 meses de lançamentos para a demonstração)
-6. `npm run dev` (API em http://localhost:3000)
+Pré-requisitos: Node.js 20 ou superior e um banco PostgreSQL (local ou no Supabase).
+
+1. Instalar as dependências:
+
+   ```bash
+   npm install
+   ```
+
+2. Preparar o banco. Escolha uma das opções:
+
+   - **PostgreSQL local:** `createdb api_financeira`.
+   - **Supabase:** crie um projeto e use a string de conexão do **Session pooler** (host `...pooler.supabase.com`,
+     porta 5432). A "Direct connection" só tem IPv6 no plano gratuito e costuma falhar com `ECONNABORTED`. Se a senha
+     tiver caracteres especiais (`@`, `#`, `/`), ela precisa estar codificada na URL (`@` vira `%40`).
+
+3. Criar o `.env` a partir do exemplo (`cp .env.example .env` no Linux/macOS, `copy .env.example .env` no Windows) e
+   preencher:
+
+   | Variável | Para que serve |
+   | --- | --- |
+   | `PORT` | Porta da API (padrão 3000) |
+   | `DATABASE_URL` | String de conexão do PostgreSQL (o nome é com underscore). O SSL liga sozinho quando a URL não é `localhost` |
+   | `JWT_SECRET` | Segredo para assinar os tokens. Use um texto longo e aleatório |
+   | `FRONT_URL` | Endereço do front liberado no CORS (padrão `http://localhost:5173`) |
+
+   O `.env` não vai para o Git; apenas o `.env.example`.
+
+4. Criar as tabelas:
+
+   ```bash
+   npm run db:criar
+   ```
+
+5. Popular com dados de demonstração (pode rodar quantas vezes quiser, ele recria os dois usuários de demonstração):
+
+   ```bash
+   npm run seed
+   ```
+
+6. Subir a API em <http://localhost:3000>:
+
+   ```bash
+   npm run dev
+   ```
 
 Testes das regras puras: `npm test`
+
+### Usuários de demonstração (seed)
+
+| E-mail | Senha | Dados |
+| --- | --- | --- |
+| `ana@demo.com` | `demo12345` | 3 meses de lançamentos, um cartão de crédito e uma compra parcelada em 3x |
+| `bruno@demo.com` | `demo12345` | Um lançamento (serve para mostrar que cada usuário só vê os próprios dados) |
+
+### Autenticação
+
+O login devolve um token JWT (HS256, validade de 1 hora). Todas as rotas, exceto cadastro e login, exigem o cabeçalho
+`Authorization: Bearer <token>`. O login tem limite de 10 tentativas a cada 15 minutos por IP (o contador fica em
+memória e zera quando o servidor reinicia).
 
 ## Estrutura
 
@@ -39,7 +90,7 @@ src/
 Tudo em `/api`. Só cadastro e login são abertos; as demais exigem `Authorization: Bearer <token>`.
 
 | Método | Rota | Descrição |
-|---|---|---|
+| --- | --- | --- |
 | POST | `/auth/cadastro` | Cadastra usuário |
 | POST | `/auth/login` | Autentica e devolve o JWT |
 | GET | `/auth/me` | Dados do usuário logado |
@@ -60,3 +111,31 @@ Tudo em `/api`. Só cadastro e login são abertos; as demais exigem `Authorizati
 - Compra parcelada: cada parcela é um lançamento que guarda a **data da compra**; a fatura de cada uma é
   calculada com `calcularFatura(data, cartão, parcelaAtual)`.
 - Banco: PostgreSQL. Back e front em repositórios separados (liberado pelo professor, para subir na Vercel).
+
+## Uso de inteligência artificial
+
+O enunciado (item 10.10) permite o uso de assistentes de IA como apoio, desde que cada integrante consiga explicar
+qualquer trecho do projeto. Aqui está como cada pessoa do grupo usou IA.
+
+### Pessoa 1 (Acesso e base): [Arthur Stellato], com Claude (Anthropic)
+
+- **Planejamento:** a IA ajudou a ler o enunciado, a dividir o trabalho em três fatias, com os contratos da API entre
+  elas, e a montar o esqueleto de pastas do back e do front (arquivos com o dono e o que falta fazer). [Confirme e
+  complete: models do back.]
+- **Escrito pelo integrante, com orientação da IA:** no front, `services/api.js`, `contexts/AuthContext.jsx`,
+  `RotaProtegida`, `Login`, `Cadastro`, `Layout` e `Dashboard`, e no back o `database/seed.js`. A IA explicou os
+  conceitos antes de cada parte (comportamento do `fetch` com erros e com resposta 204, token no `localStorage` em vez
+  de cookie, redirecionamento no 401, estados de carregando, vazio e erro), entregou esqueletos com lacunas e revisou o
+  código escrito, apontando erros que o integrante corrigiu (por exemplo `api.getItem` no lugar de `api.get`, nomes de
+  campo diferentes dos da API e uma função solta que nunca era chamada no login).
+- **Gerado pela IA e ajustado pelo integrante:** o CSS base (`index.css`) e os READMEs.
+- **Base do back** (conexão, middlewares, rotas de autenticação, validação de CPF e datas): IA gerou apenas os arquivos como base da estrutural visando economizar tempo e melhor a organização do grupo.
+- **Outros usos:** diagnóstico de erros do terminal (conflito de merge no Git, erro de CPF duplicado no seed)
+
+### Pessoa 2 (Fontes e lançamentos): [nome], com [ferramenta]
+
+- [Descreva o que a IA gerou, o que você escreveu e como revisou.]
+
+### Pessoa 3 (Categorias e relatórios): [nome], com [ferramenta]
+
+- [Descreva o que a IA gerou, o que você escreveu e como revisou.]
