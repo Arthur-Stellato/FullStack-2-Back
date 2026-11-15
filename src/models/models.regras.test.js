@@ -35,6 +35,14 @@ test('dividirParcelas (Pessoa 2): a soma sempre fecha e a sobra vai para a prime
     }
 });
 
+test('dividirParcelas (Pessoa 2): casos de borda', () => {
+    assert.deepEqual(dividirParcelas(50, 1), [50]);                      // 1x: uma parcela com o valor todo
+    assert.deepEqual(dividirParcelas(0.1, 3), [0.04, 0.03, 0.03]);       // 10 centavos: sobra de 1 centavo na primeira
+    assert.deepEqual(dividirParcelas(99.99, 7), [14.31, 14.28, 14.28, 14.28, 14.28, 14.28, 14.28]);
+    // Valor pequeno demais gera parcela zerada: a ROTA precisa barrar (400) antes de gravar.
+    assert.ok(dividirParcelas(0.02, 3).includes(0));
+});
+
 test('calcularFatura (Pessoa 3): tabela 10.3 do enunciado', () => {
     const nubank = { diaFechamento: 3, diaVencimento: 10 };
     const visa = { diaFechamento: 25, diaVencimento: 5 };
