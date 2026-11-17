@@ -10,6 +10,7 @@ const ehLocal = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes('
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: ehLocal ? false : { rejectUnauthorized: false },
+    max: 1,
 });
 
 pool.transacao = async (fn) => {

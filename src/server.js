@@ -10,10 +10,6 @@ const app = express();
 const autenticar = require('./middlewares/autenticar');
 const tratarErros = require('./middlewares/erros');
 
-if (!process.env.JWT_SECRET) {
-    console.log('Defina JWT_SECRET no arquivo .env (veja o .env.example)');
-    process.exit(1);
-}
 
 app.use(cors({ origin: process.env.FRONT_URL || 'http://localhost:5173' }));
 app.use(express.json());
