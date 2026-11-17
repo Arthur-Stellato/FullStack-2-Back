@@ -22,7 +22,7 @@ app.use('/api/lancamentos', autenticar, require('./routes/routes.lancamentos'));
 app.use('/api/relatorios', autenticar, require('./routes/routes.relatorios'));
 
 app.use((req, res) => {
-    res.status(404).json({ erro: 'Rota não encontrada.', metodo: req.method, url: req.originalUrl });
+    res.status(404).json({ erro: 'Rota não encontrada.' });
 });
 
 app.use(tratarErros);
