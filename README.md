@@ -132,9 +132,24 @@ qualquer trecho do projeto. Aqui está como cada pessoa do grupo usou IA.
 - **Base do back** (conexão, middlewares, rotas de autenticação, validação de CPF e datas): IA gerou apenas os arquivos como base da estrutural visando economizar tempo e melhor a organização do grupo.
 - **Outros usos:** diagnóstico de erros do terminal (conflito de merge no Git, erro de CPF duplicado no seed)
 
-### Pessoa 2 (Fontes e lançamentos): [nome], com [ferramenta]
+### Pessoa 2 (Fontes e lançamentos): Conrado, com Claude (Anthropic)
 
-- [Descreva o que a IA gerou, o que você escreveu e como revisou.]
+- **Planejamento:** A IA ajudou a analisar a seção da Pessoa 2 no DIVISAO.md e no enunciado, organizando o desenvolvimento
+  do back-end em 10 commits pequenos, seguindo a ordem de dependência: fontes e destinos, listagem, criação, parcelamento e
+  exclusão de lançamentos. Também trabalhamos juntos na definição dos contratos das respostas, como o POST /lancamentos 
+  sempre devolver uma lista e o DELETE aceitar ?todasParcelas=true.
+- **Desenvolvimento com apoio da IA:** Trabalhei junto com a IA na implementação de routes.fontesDestinos.js 
+  e routes.lancamentos.js, além dos testes de borda de dividirParcelas em models.regras.test.js. A IA auxiliou na estruturação
+  e apresentou sugestões para as validações, consultas SQL, paginação, cálculo dos totais e parcelamento em transação, enquanto
+  participei das decisões, análise e ajustes durante o desenvolvimento.
+- **Escrito ou feito pelo integrante, com orientação da IA:** Participei da implementação das rotas, acompanhei as explicações 
+  sobre as consultas SQL, validações e transações, revisei o código durante o desenvolvimento e realizei ajustes conforme os
+  problemas identificados. Também acompanhei a organização dos commits e a integração das funcionalidades com a estrutura do projeto.
+- **Base utilizada (feita pela Pessoa 1): ** Foram reaproveitados a conexão com o banco, os middlewares (autenticar, validar e erros),
+  ErroApi e as funções de data (dataValida, mesCorrente e validarPeriodo), sem alterações. As rotas da Pessoa 2 seguiram o padrão do 
+  grupo, utilizando usuario_id = req.usuarioId nas consultas, erros com ErroApi e tradução de erros do banco (23505 e 23503 para 409).
+- **Outros usos:** A IA também foi utilizada como apoio para analisar possíveis erros, compreender mensagens do terminal 
+  e orientar correções durante o desenvolvimento.
 
 ### Pessoa 3 (Categorias e relatórios): [nome], com [ferramenta]
 
