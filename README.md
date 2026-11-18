@@ -145,7 +145,7 @@ qualquer trecho do projeto. Aqui está como cada pessoa do grupo usou IA.
 - **Escrito ou feito pelo integrante, com orientação da IA:** Participei da implementação das rotas, acompanhei as explicações 
   sobre as consultas SQL, validações e transações, revisei o código durante o desenvolvimento e realizei ajustes conforme os
   problemas identificados. Também acompanhei a organização dos commits e a integração das funcionalidades com a estrutura do projeto.
-- **Base utilizada (feita pela Pessoa 1): ** Foram reaproveitados a conexão com o banco, os middlewares (autenticar, validar e erros),
+- **Base utilizada (feita pela Pessoa 1):** Foram reaproveitados a conexão com o banco, os middlewares (autenticar, validar e erros),
   ErroApi e as funções de data (dataValida, mesCorrente e validarPeriodo), sem alterações. As rotas da Pessoa 2 seguiram o padrão do 
   grupo, utilizando usuario_id = req.usuarioId nas consultas, erros com ErroApi e tradução de erros do banco (23505 e 23503 para 409).
 - **Outros usos:** A IA também foi utilizada como apoio para analisar possíveis erros, compreender mensagens do terminal 
