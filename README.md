@@ -151,6 +151,21 @@ qualquer trecho do projeto. Aqui está como cada pessoa do grupo usou IA.
 - **Outros usos:** A IA também foi utilizada como apoio para analisar possíveis erros, compreender mensagens do terminal 
   e orientar correções durante o desenvolvimento.
 
-### Pessoa 3 (Categorias e relatórios): [nome], com [ferramenta]
+### Pessoa 3 (Categorias e relatórios): João Felipe Aleixo de Melo, com Claude (Anthropic)
 
-- [Descreva o que a IA gerou, o que você escreveu e como revisou.]
+- **Planejamento:** A IA ajudou a organizar o desenvolvimento do back-end em etapas pequenas, seguindo a ordem de dependência:
+  primeiro o CRUD de categorias (`routes.categorias.js`), depois o cálculo de fechamento e vencimento da fatura (`calcularFatura`)
+  e, por fim, as rotas de relatórios (`routes.relatorios.js`).
+- **Desenvolvimento com apoio da IA:** Trabalhei junto com a IA na implementação de `routes.categorias.js`,
+  `calcularFatura` em `models.regras.js` e `routes.relatorios.js`, além de validar as regras de período de fechamento do cartão.
+   A IA auxiliou na estruturação e apresentou sugestões para as validações e consultas SQL agregadas por categoria, enquanto eu
+  participava das decisões, análises e ajustes durante o desenvolvimento.
+- **Escrito ou feito pelo membro, com orientação da IA:** Participei da implementação das rotas e das regras de fatura, acompanhei
+  as explicações sobre as consultas SQL e validações, rodei os testes automatizados (`npm test`), revisei o código durante o
+  desenvolvimento e realizei ajustes conforme os resultados. Também acompanhei a organização dos commits e a integração das funcionalidades com a branch `main`.
+- **Base utilizada (feita pela Pessoa 1):** Foram reaproveitados a conexão com o banco, os middlewares (`autenticar`, `validar`
+  e `erros`), `ErroApi` e as funções de datas (`dataValida`, `mesCorrente` e `validarPeriodo`), sem alterações. As rotas da
+  Pessoa 3 seguiram o padrão do grupo, utilizando `usuario_id = req.usuarioId` nas consultas, erros com `ErroApi` e tradução
+  de erros do banco (`23505` para `409` na duplicidade de categorias).
+- **Outros usos:** A IA também foi utilizada como apoio para analisar erros no terminal, revisar o fluxo de branches e
+  Pull Requests no Git/GitHub Desktop e orientar correções durante o desenvolvimento.
